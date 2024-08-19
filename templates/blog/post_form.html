@@ -1,0 +1,35 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit Post{% else %}Create Post{% endif %} - MyPortfolio{% endblock title %}
+
+{% block extra_css %}
+{{ form.media.css }}
+{% endblock extra_css %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">{% if form.instance.pk %}Edit Post{% else %}Create Post{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.media }}
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Update{% else %}Create{% endif %} Post</button>
+    </form>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+{{ form.media.js }}
+{% endblock extra_js %}

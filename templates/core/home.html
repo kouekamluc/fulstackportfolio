@@ -1,0 +1,35 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Home - MyPortfolio{% endblock title %}
+
+{% block header %}Feed{% endblock header %}
+
+{% block content %}
+<div class="row">
+    {% for item in feed_items %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        {% if item.type == 'project' %}
+                            <i class="fas fa-project-diagram"></i> Project
+                        {% else %}
+                            <i class="fas fa-newspaper"></i> Article
+                        {% endif %}
+                        by {{ item.author }}
+                    </h6>
+                    <p class="card-text">{{ item.description|truncatewords:30 }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ item.url }}" class="btn btn-primary">Read More</a>
+                    <small class="text-muted float-end">{{ item.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No items in the feed yet.</p>
+    {% endfor %}
+</div>
+{% endblock content %}

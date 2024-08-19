@@ -1,0 +1,16 @@
+
+{% block header %}{{ post.title }}{% endblock header %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">
+            <i class="fas fa-user"></i> {{ post.author.username }} | 
+            <i class="fas fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}
+        </h6>
+        <div class="card-text mt-4">
+            {{ post.content|safe }}
+        </div>
+    </div>
+</div>
+{% endblock content %}

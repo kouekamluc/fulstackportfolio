@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ user.username }}'s Profile - MyPortfolio{% endblock title %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background-color: #2d2d2d;
+        border-bottom: 1px solid #3a3a3a;
+        padding: 20px 0;
+    }
+    .profile-nav {
+        border-bottom: 1px solid #3a3a3a;
+    }
+    .profile-nav .nav-link {
+        color: #a0a0a0;
+        padding: 10px 20px;
+    }
+    .profile-nav .nav-link.active {
+        color: #ffffff;
+        border-bottom: 2px solid #007bff;
+    }
+    .profile-content {
+        padding: 20px 0;
+    }
+    .avatar {
+        width: 100px;
+        height: 100px;
+        background-color: #4a4a4a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: #ffffff;
+        border-radius: 12px;
+    }
+    .stats-card {
+        background-color: #2d2d2d;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .progress {
+        height: 8px;
+        background-color: #4a4a4a;
+    }
+    .progress-bar {
+        background-color: #007bff;
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="avatar">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle">
+                    {% else %}
+                        {{ user.username.0|upper }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col">
+                <h2>{{ user.get_full_name }}</h2>
+                <p class="text-muted">@{{ user.username }} • Joined {{ user.date_joined|date:"F Y" }}</p>
+                <p>{{ user.reputation }} Reputation {{ user.profile_views }} Views {{ user.upvotes }} Upvotes</p>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'profile_edit' %}" class="btn btn-outline-light">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="profile-nav">
+    <div class="container">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Readme</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Projects</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Blog Posts</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Reading Activity</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="profile-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-4">
+                    <h5>Reading streak</h5>
+                    <div class="stats-card">
+                        <div class="row">
+                            <div class="col">
+                                <h3>{{ user.longest_streak }}</h3>
+                                <p class="text-muted">Longest streak 🏆</p>
+                            </div>
+                            <div class="col">
+                                <h3>{{ user.total_reading_days }}</h3>
+                                <p class="text-muted">Total reading days</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Top tags by reading days</h5>
+                    <div class="stats-card">
+                        {% for tag in user.get_top_tags %}
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <span>#{{ tag.name }}</span>
+                                <span>{{ tag.percentage }}%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ tag.percentage }}%" aria-valuenow="{{ tag.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div>
+                    <h5>Posts read in the last year ({{ user.posts_read_last_year }})</h5>
+                    <!-- Add a graph or chart here -->
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <h5>Skills</h5>
+                    {% for skill in user.skills.all %}
+                        <p>{{ skill.name }} - Proficiency: {{ skill.proficiency }}</p>
+                    {% empty %}
+                        <p>No skills added yet.</p>
+                    {% endfor %}
+                </div>
+                
+                <div class="stats-card mt-4">
+                    <h5>Experience</h5>
+                    {% for exp in user.experiences.all %}
+                        <p>{{ exp.position }} at {{ exp.company }} ({{ exp.start_date }} - {{ exp.end_date|default:"Present" }})</p>
+                    {% empty %}
+                        <p>No experience added yet.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="stats-card mt-4">
+                    <h5>Education</h5>
+                    {% for edu in user.education.all %}
+                        <p>{{ edu.degree }} in {{ edu.field_of_study }} at {{ edu.institution }}</p>
+                    {% empty %}
+                        <p>No education added yet.</p>
+                    {% endfor %}
+                </div>
+                
+                <div class="stats-card mt-4">
+                    <h5>Recent Activity</h5>
+                    {% for activity in user.reading_activities.all|slice:":5" %}
+                        <p>Read: {{ activity.title }} ({{ activity.date|date:"M d, Y" }})</p>
+                    {% empty %}
+                        <p>No recent activity.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
